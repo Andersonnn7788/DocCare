@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,12 +62,26 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom brand colors
+				emerald: {
+					600: '#059669', // Primary brand color
+				},
+				sky: {
+					500: '#0ea5e9', // Secondary brand color
+				},
+				slate: {
+					900: '#0f172a', // Dark accent color
 				}
+			},
+			fontFamily: {
+				sans: ['Poppins', 'Inter', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				xl: '1rem',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -84,11 +99,28 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' },
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+				'float': 'float 6s ease-in-out infinite',
+			},
+			backgroundImage: {
+				'aurora-gradient': 'linear-gradient(120deg, #059669 0%, #0ea5e9 100%)',
+				'aurora-light': 'linear-gradient(120deg, rgba(5,150,105,0.1) 0%, rgba(14,165,233,0.1) 100%)',
+			},
+			boxShadow: {
+				'soft': '0 10px 25px -3px rgba(0, 0, 0, 0.05)',
 			}
 		}
 	},
