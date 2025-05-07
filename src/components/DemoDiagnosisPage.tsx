@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,16 +18,24 @@ const DemoDiagnosisPage = () => {
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>([
     {
+      id: "rec1",
+      patientId: patientId,
       date: "2023-01-15T08:30:00Z",
       diagnosis: "Hypertension, stage 1",
       treatment: "Prescribed Lisinopril 10mg daily",
-      notes: "Patient advised to reduce sodium intake and exercise regularly"
+      notes: "Patient advised to reduce sodium intake and exercise regularly",
+      doctorId: "doc123",
+      doctorName: "Dr. Sarah Chen"
     },
     {
+      id: "rec2",
+      patientId: patientId,
       date: "2023-06-22T10:15:00Z",
       diagnosis: "Common cold",
       treatment: "Rest and over-the-counter cold medication",
-      notes: "Follow up if symptoms persist beyond 7 days"
+      notes: "Follow up if symptoms persist beyond 7 days",
+      doctorId: "doc456",
+      doctorName: "Dr. Michael Wong"
     }
   ]);
   const navigate = useNavigate();
@@ -65,6 +72,7 @@ const DemoDiagnosisPage = () => {
                   </div>
                   <div>
                     <MedicalRecordUploader
+                      patientId={patientId}
                       records={medicalRecords}
                       onRecordsChange={setMedicalRecords}
                     />

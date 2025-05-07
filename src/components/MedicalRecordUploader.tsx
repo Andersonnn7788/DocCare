@@ -1,12 +1,14 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, X, FileText, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { MedicalRecord } from "@/types/medical";
 
 interface MedicalRecordUploaderProps {
-  patientId: string;
+  patientId?: string;
   onUploadComplete?: (fileUrls: string[]) => void;
+  records?: MedicalRecord[];
+  onRecordsChange?: (records: MedicalRecord[]) => void;
 }
 
 type UploadingFile = {
@@ -19,7 +21,9 @@ type UploadingFile = {
 
 const MedicalRecordUploader = ({ 
   patientId, 
-  onUploadComplete 
+  onUploadComplete,
+  records = [],
+  onRecordsChange
 }: MedicalRecordUploaderProps) => {
   const [files, setFiles] = useState<UploadingFile[]>([]);
   const [dragActive, setDragActive] = useState(false);
@@ -212,6 +216,24 @@ const MedicalRecordUploader = ({
                   />
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {records && records.length > 0 && (
+        <div className="mt-4 space-y-3">
+          <h3 className="text-sm font-medium">Existing Medical Records</h3>
+          {records.map((record, idx) => (
+            <div key={record.id || `record-${idx}`} className="bg-gray-50 p-3 rounded-md">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">{new Date(record.date).toLocaleDateString()}</span>
+              </div>
+              <p className="text-sm text-gray-700 mt-1"><strong>Diagnosis:</strong> {record.diagnosis}</p>
+              <p className="text-sm text-gray-700"><strong>Treatment:</strong> {record.treatment}</p>
+              {record.notes && (
+                <p className="text-sm text-gray-600 mt-1"><strong>Notes:</strong> {record.notes}</p>
+              )}
             </div>
           ))}
         </div>
