@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import LanguageToggle from "@/components/LanguageToggle";
 import { initiateConsultation } from "@/services/consultationService";
 import { Consultation } from "@/types/medical";
-import { Loader2 } from "lucide-react";
+import { Loader2, Hospital } from "lucide-react";
 import { useOpenAIApiKey } from "@/lib/openai";
 import { toast } from "sonner";
 
@@ -78,6 +78,19 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
     }
   };
 
+  const getExampleSymptoms = () => {
+    switch (language) {
+      case 'ms':
+        return "Contoh: Saya mengalami sakit kepala yang teruk, pening dan loya selama 3 hari. Saya juga mengalami demam ringan.";
+      case 'zh':
+        return "例如：我已经头痛、头晕和恶心三天了。我还有轻微发烧。";
+      case 'ta':
+        return "உதாரணம்: எனக்கு 3 நாட்களாக கடுமையான தலைவலி, தலைச்சுற்றல் மற்றும் குமட்டல் உள்ளது. எனக்கு லேசான காய்ச்சலும் உள்ளது.";
+      default:
+        return "Example: I've been experiencing severe headache, dizziness and nausea for 3 days. I also have a mild fever.";
+    }
+  };
+
   return (
     <div className="card p-6">
       <div className="mb-4">
@@ -106,9 +119,20 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
             onChange={(e) => setSymptoms(e.target.value)}
             disabled={loading || !isKeySet}
           />
+          <p className="text-xs text-gray-500 mt-1">{getExampleSymptoms()}</p>
         </div>
         
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <Button
+            type="button"
+            variant="outline"
+            className="text-sm flex items-center"
+            onClick={() => setSymptoms(getExampleSymptoms())}
+            disabled={loading || !isKeySet}
+          >
+            <span className="mr-1">Use example</span>
+          </Button>
+          
           <Button 
             type="submit" 
             className="btn-primary" 
@@ -120,7 +144,10 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
                 Analyzing...
               </>
             ) : (
-              "Analyze Symptoms"
+              <>
+                <Hospital className="mr-2 h-4 w-4" />
+                Analyze Symptoms
+              </>
             )}
           </Button>
         </div>

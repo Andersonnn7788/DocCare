@@ -1,11 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useOpenAIApiKey } from "@/lib/openai";
 import { toast } from "sonner";
-import { Info } from "lucide-react";
+import { Info, AlertTriangle } from "lucide-react";
 
 interface ApiKeyInputProps {
   onComplete?: () => void;
@@ -15,6 +15,14 @@ const ApiKeyInput = ({ onComplete }: ApiKeyInputProps) => {
   const { apiKey, setApiKey, isKeySet } = useOpenAIApiKey();
   const [inputKey, setInputKey] = useState(apiKey);
   const [showDialog, setShowDialog] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  
+  useEffect(() => {
+    // Automatically show dialog if no API key is set
+    if (!isKeySet) {
+      setShowDialog(true);
+    }
+  }, [isKeySet]);
   
   const handleSaveKey = () => {
     if (!inputKey || inputKey.trim().length < 10) {
@@ -25,6 +33,7 @@ const ApiKeyInput = ({ onComplete }: ApiKeyInputProps) => {
     setApiKey(inputKey.trim());
     toast.success("API key saved successfully");
     setShowDialog(false);
+    setShowIntro(false);
     
     if (onComplete) {
       onComplete();
@@ -36,7 +45,7 @@ const ApiKeyInput = ({ onComplete }: ApiKeyInputProps) => {
       {!isKeySet ? (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
           <div className="flex items-start space-x-3">
-            <Info className="h-5 w-5 text-amber-500 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5" />
             <div>
               <h3 className="font-medium text-amber-800">API Key Required</h3>
               <p className="text-sm text-amber-700 mt-1">
@@ -69,12 +78,35 @@ const ApiKeyInput = ({ onComplete }: ApiKeyInputProps) => {
         </div>
       )}
       
+      {showIntro && isKeySet && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start space-x-3">
+            <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-blue-800">How to Use the AI Diagnosis</h3>
+              <p className="text-sm text-blue-700 mt-1">
+                Describe your symptoms in the form below. The AI will analyze them and provide preliminary insights.
+                You can also upload medical records to improve the diagnosis accuracy.
+              </p>
+              <Button 
+                onClick={() => setShowIntro(false)}
+                className="mt-3 bg-blue-500 hover:bg-blue-600 text-white"
+                size="sm"
+              >
+                Got it
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Enter OpenAI API Key</DialogTitle>
             <DialogDescription>
               Your API key is stored locally in your browser and never sent to our servers.
+              You need a GPT-4 enabled API key to use this feature.
             </DialogDescription>
           </DialogHeader>
           

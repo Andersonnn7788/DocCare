@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AIDiagnosticForm from "@/components/AIDiagnosticForm";
@@ -7,6 +8,8 @@ import MedicalRecordUploader from "@/components/MedicalRecordUploader";
 import { Consultation, MedicalRecord } from "@/types/medical";
 import ApiKeyInput from "./ApiKeyInput";
 import { useOpenAIApiKey } from "@/lib/openai";
+import { initializeMockData } from "@/services/consultationService";
+import { toast } from "sonner";
 
 // Mock patient data
 const patientId = "p12345";
@@ -40,6 +43,12 @@ const DemoDiagnosisPage = () => {
   ]);
   const navigate = useNavigate();
   const { isKeySet } = useOpenAIApiKey();
+  
+  // Initialize mock data for the demo
+  useEffect(() => {
+    initializeMockData();
+    toast.success("AI Diagnosis Demo initialized");
+  }, []);
 
   const handleConsultationComplete = (newConsultation: Consultation) => {
     setConsultation(newConsultation);
