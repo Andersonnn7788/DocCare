@@ -1,6 +1,7 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, X, FileText, CheckCircle } from "lucide-react";
+import { Upload, X, FileText, CheckCircle, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MedicalRecord } from "@/types/medical";
 
@@ -150,6 +151,47 @@ const MedicalRecordUploader = ({
     }, 300);
   };
 
+  const handleSubmitRecords = () => {
+    // In a real application, this would send the completed files to a server
+    // For demo purposes, we'll just show a success message
+    const completedFiles = files.filter(f => f.status === 'complete');
+    
+    if (completedFiles.length === 0) {
+      toast({
+        title: "No files to submit",
+        description: "Please upload at least one file before submitting",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Create mock medical records from the uploaded files
+    const newRecords: MedicalRecord[] = completedFiles.map(file => ({
+      id: `rec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      patientId: patientId || "unknown",
+      date: new Date().toISOString(),
+      diagnosis: "Pending review",
+      treatment: "Awaiting doctor assessment",
+      doctorId: "system",
+      doctorName: "System Upload",
+      notes: `File uploaded: ${file.name}`,
+    }));
+    
+    // Update records if callback provided
+    if (onRecordsChange) {
+      onRecordsChange([...records, ...newRecords]);
+    }
+    
+    // Clear the file list
+    setFiles([]);
+    
+    toast({
+      title: "Records submitted successfully",
+      description: `${completedFiles.length} file(s) have been uploaded to your medical records`,
+      variant: "default",
+    });
+  };
+
   return (
     <div className="card p-6">
       <h2 className="text-xl font-semibold mb-2">Upload Medical Records</h2>
@@ -218,6 +260,16 @@ const MedicalRecordUploader = ({
               </div>
             </div>
           ))}
+          
+          <div className="flex justify-end mt-4">
+            <Button 
+              onClick={handleSubmitRecords} 
+              className="flex items-center"
+            >
+              Submit Records
+              <Send className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
       )}
 

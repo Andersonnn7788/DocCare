@@ -16,10 +16,21 @@ export const initiateConsultation = async (
   language: string
 ): Promise<Consultation> => {
   try {
-    // Find patient
-    const patient = mockPatients.find(p => p.id === patientId);
+    // For demo purposes, if the patientId is "p12345" (from DemoDiagnosisPage), use that
+    let patient = mockPatients.find(p => p.id === patientId);
+    
+    // If no patient found, create a demo patient for the given ID
     if (!patient) {
-      throw new Error("Patient not found");
+      const newPatient: Patient = {
+        id: patientId,
+        name: "Demo Patient",
+        dateOfBirth: "1990-01-01",
+        gender: "male",
+        preferredLanguage: language || "en",
+        contactNumber: "+60123456789"
+      };
+      mockPatients.push(newPatient);
+      patient = newPatient;
     }
 
     // Translate symptoms if not in English
