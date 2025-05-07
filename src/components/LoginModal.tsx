@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useNavigate } from 'react-router-dom';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -18,29 +19,34 @@ const LoginModal = ({ isOpen, onClose, mode }: LoginModalProps) => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const navigate = useNavigate();
   
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (email && password) {
-      // In a real app, we would make an API call here
-      console.log('Logging in with:', { email, password, rememberMe, mode });
+      // Log login details (for development only)
+      console.info('Logging in with:', { email, password, rememberMe, mode });
       
       // Show a toast notification
       toast.success(`${mode === 'patient' ? 'Patient' : 'Doctor'} login successful`, {
         description: "Welcome to MY-Care AI platform."
       });
       
-      // Redirect based on role
-      if (mode === 'patient') {
-        // Navigate to patient portal (simulated)
-        window.location.href = '#patient-portal';
-      } else {
-        // Navigate to doctor dashboard (simulated)
-        window.location.href = '#doctor-dashboard';
-      }
-      
+      // Close the modal first
       onClose();
+      
+      // Navigate based on role - with a short delay to allow the toast to be seen
+      setTimeout(() => {
+        if (mode === 'patient') {
+          // Navigate to patient portal/diagnosis page
+          navigate('/diagnosis');
+        } else {
+          // For doctors, navigate to diagnosis page (placeholder for doctor dashboard)
+          // In a real app, this would go to a different doctor-specific route
+          navigate('/diagnosis');
+        }
+      }, 1000);
     } else {
       toast.error("Please fill in all required fields");
     }

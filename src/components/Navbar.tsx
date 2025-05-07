@@ -4,15 +4,23 @@ import { Button } from "@/components/ui/button";
 import LanguageToggle from './LanguageToggle';
 import LoginModal from './LoginModal';
 import { Menu, User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginMode, setLoginMode] = useState<'patient' | 'doctor'>('patient');
+  const navigate = useNavigate();
 
   const openLoginModal = (mode: 'patient' | 'doctor') => {
     setLoginMode(mode);
     setIsLoginModalOpen(true);
+  };
+  
+  const handleDemoClick = () => {
+    // Navigate directly to the diagnosis demo page
+    navigate('/diagnosis');
+    setIsMenuOpen(false); // Close mobile menu if open
   };
 
   return (
@@ -21,7 +29,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex items-center">
-            <a href="/" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <div className="w-10 h-10 rounded-lg bg-aurora-gradient flex items-center justify-center mr-2">
                 <span className="text-white font-bold text-lg">MC</span>
               </div>
@@ -29,7 +37,7 @@ const Navbar = () => {
                 MY<span className="text-emerald-600">-</span>Care
                 <span className="ml-1 text-sky-500">AI</span>
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -46,6 +54,13 @@ const Navbar = () => {
             <a href="#about" className="text-slate-700 hover:text-emerald-600 font-medium transition-colors">
               About
             </a>
+            <Button 
+              onClick={handleDemoClick} 
+              className="text-slate-700 hover:text-emerald-600 font-medium transition-colors"
+              variant="ghost"
+            >
+              Demo
+            </Button>
             <LanguageToggle />
           </nav>
 
@@ -93,6 +108,13 @@ const Navbar = () => {
               <a href="#about" className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium">
                 About
               </a>
+              <Button
+                onClick={handleDemoClick}
+                className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium text-left"
+                variant="ghost"
+              >
+                Demo
+              </Button>
               
               <div className="flex items-center justify-between py-3">
                 <LanguageToggle />

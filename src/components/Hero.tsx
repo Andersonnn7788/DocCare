@@ -1,15 +1,22 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import LoginModal from "./LoginModal";
 
 const Hero = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginMode, setLoginMode] = useState<'patient' | 'doctor'>('patient');
+  const navigate = useNavigate();
 
   const openLoginModal = (mode: 'patient' | 'doctor') => {
     setLoginMode(mode);
     setIsLoginModalOpen(true);
+  };
+  
+  const handleDemoClick = () => {
+    // Navigate directly to the diagnosis demo page
+    navigate('/diagnosis');
   };
 
   return (
@@ -34,6 +41,12 @@ const Hero = () => {
                 className="btn-primary"
               >
                 Start Consultation
+              </Button>
+              <Button 
+                onClick={handleDemoClick} 
+                className="btn-outline"
+              >
+                Try Demo
               </Button>
               <Button 
                 onClick={() => openLoginModal('doctor')} 
