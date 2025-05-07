@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Available languages in Malaysia
 const languages = [
@@ -9,13 +9,30 @@ const languages = [
   { code: 'ta', name: 'TA' }, // Tamil
 ];
 
-const LanguageToggle = () => {
-  const [currentLanguage, setCurrentLanguage] = useState('en');
+interface LanguageToggleProps {
+  onLanguageChange?: (langCode: string) => void;
+  currentLanguage?: string;
+}
+
+const LanguageToggle = ({ 
+  onLanguageChange, 
+  currentLanguage = 'en' 
+}: LanguageToggleProps) => {
+  const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
+
+  useEffect(() => {
+    if (currentLanguage !== selectedLanguage) {
+      setSelectedLanguage(currentLanguage);
+    }
+  }, [currentLanguage]);
 
   const handleLanguageChange = (langCode: string) => {
-    setCurrentLanguage(langCode);
+    setSelectedLanguage(langCode);
     // In a real app, this would update i18n context and translations
     console.log(`Language changed to: ${langCode}`);
+    if (onLanguageChange) {
+      onLanguageChange(langCode);
+    }
   };
 
   return (
@@ -24,7 +41,7 @@ const LanguageToggle = () => {
         <button
           key={lang.code}
           onClick={() => handleLanguageChange(lang.code)}
-          className={`language-toggle-item ${currentLanguage === lang.code ? 'active' : ''}`}
+          className={`language-toggle-item ${selectedLanguage === lang.code ? 'active' : ''}`}
           aria-label={`Change language to ${lang.name}`}
         >
           {lang.name}
