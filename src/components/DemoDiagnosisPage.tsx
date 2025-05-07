@@ -129,8 +129,9 @@ const DemoDiagnosisPage = () => {
         </div>
       )}
       
-      {/* Add custom styles for progress steps */}
-      <style jsx>{`
+      {/* Add CSS classes for progress steps directly in a style tag without jsx property */}
+      <style>
+        {`
         .step-item {
           display: flex;
           flex-direction: column;
@@ -182,7 +183,8 @@ const DemoDiagnosisPage = () => {
         .step-item.completed + .step-line {
           background-color: #10b981;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
