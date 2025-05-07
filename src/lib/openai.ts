@@ -1,9 +1,36 @@
 
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import { useState } from "react";
 
-// Replace with your actual API key implementation
-// In production, this should be stored securely in backend environment variables
-const OPENAI_API_KEY = "sk-placeholder-key"; 
+// Store the API key in localStorage for demo purposes
+let OPENAI_API_KEY = localStorage.getItem("openai_api_key");
+
+// Function to set the API key
+export const setOpenAIApiKey = (apiKey: string) => {
+  OPENAI_API_KEY = apiKey;
+  localStorage.setItem("openai_api_key", apiKey);
+  return true;
+};
+
+export const getOpenAIApiKey = () => {
+  return OPENAI_API_KEY;
+};
+
+// Hook to check if API key is set
+export const useOpenAIApiKey = () => {
+  const [apiKey, setApiKey] = useState(OPENAI_API_KEY || "");
+  
+  const saveApiKey = (key: string) => {
+    setApiKey(key);
+    setOpenAIApiKey(key);
+  };
+  
+  return { 
+    apiKey, 
+    setApiKey: saveApiKey, 
+    isKeySet: Boolean(OPENAI_API_KEY)
+  };
+};
 
 export type TranslationRequest = {
   text: string;
@@ -59,6 +86,11 @@ export const translateText = async ({
   targetLanguage 
 }: TranslationRequest): Promise<string> => {
   try {
+    // Check if API key is set
+    if (!OPENAI_API_KEY) {
+      throw new Error("OpenAI API key not set");
+    }
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -66,7 +98,7 @@ export const translateText = async ({
         "Authorization": `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -101,6 +133,11 @@ export const generateDiagnosis = async ({
   medicalRecords = [] 
 }: DiagnosisRequest): Promise<DiagnosisResult> => {
   try {
+    // Check if API key is set
+    if (!OPENAI_API_KEY) {
+      throw new Error("OpenAI API key not set");
+    }
+
     // First translate if not in English
     let processedDescription = patientDescription;
     if (language !== "en") {
@@ -125,7 +162,7 @@ export const generateDiagnosis = async ({
         "Authorization": `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -187,6 +224,11 @@ export const recommendHospitals = async ({
   patientNeeds
 }: HospitalRecommendationRequest): Promise<HospitalRecommendation[]> => {
   try {
+    // Check if API key is set
+    if (!OPENAI_API_KEY) {
+      throw new Error("OpenAI API key not set");
+    }
+    
     // In a production app, this would connect to a real hospital database API
     // For now, we'll use OpenAI to simulate realistic recommendations
     
@@ -197,7 +239,7 @@ export const recommendHospitals = async ({
         "Authorization": `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",

@@ -20,7 +20,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="bg-aurora-light py-16 md:py-24">
+    <section className="bg-aurora-light py-16 md:py-24" id="home">
       <div className="section-container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">

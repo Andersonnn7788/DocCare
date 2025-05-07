@@ -36,17 +36,17 @@ const LoginModal = ({ isOpen, onClose, mode }: LoginModalProps) => {
       // Close the modal first
       onClose();
       
+      // Store user authentication state in localStorage (demo only)
+      localStorage.setItem("my-care-user", JSON.stringify({
+        email,
+        role: mode,
+        loggedIn: true
+      }));
+      
       // Navigate based on role - with a short delay to allow the toast to be seen
       setTimeout(() => {
-        if (mode === 'patient') {
-          // Navigate to patient portal/diagnosis page
-          navigate('/diagnosis');
-        } else {
-          // For doctors, navigate to diagnosis page (placeholder for doctor dashboard)
-          // In a real app, this would go to a different doctor-specific route
-          navigate('/diagnosis');
-        }
-      }, 1000);
+        navigate('/diagnosis');
+      }, 500);
     } else {
       toast.error("Please fill in all required fields");
     }

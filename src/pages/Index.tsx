@@ -5,16 +5,38 @@ import FeatureCards from "@/components/FeatureCards";
 import HowItWorks from "@/components/HowItWorks";
 import SecuritySection from "@/components/SecuritySection";
 import Footer from "@/components/Footer";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const Index = () => {
+  const location = useLocation();
+
+  // Handle hash navigation
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <Hero />
-        <FeatureCards />
-        <HowItWorks />
-        <SecuritySection />
+        <div id="features">
+          <FeatureCards />
+        </div>
+        <div id="how-it-works">
+          <HowItWorks />
+        </div>
+        <div id="security">
+          <SecuritySection />
+        </div>
         
         {/* Patient and Doctor Previews */}
         <section id="about" className="section-container">

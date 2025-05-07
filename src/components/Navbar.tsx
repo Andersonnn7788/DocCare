@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import LanguageToggle from './LanguageToggle';
 import LoginModal from './LoginModal';
 import { Menu, User } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginMode, setLoginMode] = useState<'patient' | 'doctor'>('patient');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const openLoginModal = (mode: 'patient' | 'doctor') => {
     setLoginMode(mode);
@@ -21,6 +22,13 @@ const Navbar = () => {
     // Navigate directly to the diagnosis demo page
     navigate('/diagnosis');
     setIsMenuOpen(false); // Close mobile menu if open
+  };
+
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname === path || location.hash === path;
   };
 
   return (
@@ -42,21 +50,33 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-slate-700 hover:text-emerald-600 font-medium transition-colors">
+            <Link 
+              to="/#features" 
+              className={`${isActive('#features') ? 'text-emerald-600' : 'text-slate-700 hover:text-emerald-600'} font-medium transition-colors`}
+            >
               Features
-            </a>
-            <a href="#how-it-works" className="text-slate-700 hover:text-emerald-600 font-medium transition-colors">
+            </Link>
+            <Link 
+              to="/#how-it-works" 
+              className={`${isActive('#how-it-works') ? 'text-emerald-600' : 'text-slate-700 hover:text-emerald-600'} font-medium transition-colors`}
+            >
               How It Works
-            </a>
-            <a href="#security" className="text-slate-700 hover:text-emerald-600 font-medium transition-colors">
+            </Link>
+            <Link 
+              to="/#security" 
+              className={`${isActive('#security') ? 'text-emerald-600' : 'text-slate-700 hover:text-emerald-600'} font-medium transition-colors`}
+            >
               Security
-            </a>
-            <a href="#about" className="text-slate-700 hover:text-emerald-600 font-medium transition-colors">
+            </Link>
+            <Link 
+              to="/#about" 
+              className={`${isActive('#about') ? 'text-emerald-600' : 'text-slate-700 hover:text-emerald-600'} font-medium transition-colors`}
+            >
               About
-            </a>
+            </Link>
             <Button 
               onClick={handleDemoClick} 
-              className="text-slate-700 hover:text-emerald-600 font-medium transition-colors"
+              className={`${isActive('/diagnosis') ? 'text-emerald-600' : 'text-slate-700 hover:text-emerald-600'} font-medium transition-colors`}
               variant="ghost"
             >
               Demo
@@ -96,18 +116,34 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden pt-2 pb-4 border-t border-gray-200">
             <div className="flex flex-col space-y-4 px-2 mt-3">
-              <a href="#features" className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium">
+              <Link 
+                to="/#features"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium"
+              >
                 Features
-              </a>
-              <a href="#how-it-works" className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium">
+              </Link>
+              <Link 
+                to="/#how-it-works"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium"
+              >
                 How It Works
-              </a>
-              <a href="#security" className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium">
+              </Link>
+              <Link 
+                to="/#security"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium"
+              >
                 Security
-              </a>
-              <a href="#about" className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium">
+              </Link>
+              <Link 
+                to="/#about"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium"
+              >
                 About
-              </a>
+              </Link>
               <Button
                 onClick={handleDemoClick}
                 className="text-slate-700 hover:text-emerald-600 px-3 py-2 text-base font-medium text-left"

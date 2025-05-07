@@ -7,6 +7,8 @@ import LanguageToggle from "@/components/LanguageToggle";
 import { initiateConsultation } from "@/services/consultationService";
 import { Consultation } from "@/types/medical";
 import { Loader2 } from "lucide-react";
+import { useOpenAIApiKey } from "@/lib/openai";
+import { toast } from "sonner";
 
 interface AIDiagnosticFormProps {
   patientId: string;
@@ -17,7 +19,8 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
   const [symptoms, setSymptoms] = useState("");
   const [language, setLanguage] = useState("en");
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
+  const { isKeySet } = useOpenAIApiKey();
 
   const handleLanguageChange = (langCode: string) => {
     setLanguage(langCode);
@@ -27,11 +30,16 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
     e.preventDefault();
     
     if (!symptoms.trim()) {
-      toast({
+      uiToast({
         title: "Error",
         description: "Please describe your symptoms",
         variant: "destructive",
       });
+      return;
+    }
+
+    if (!isKeySet) {
+      toast.error("Please set your OpenAI API key first");
       return;
     }
     
@@ -39,14 +47,14 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
     
     try {
       const consultation = await initiateConsultation(patientId, symptoms, language);
-      toast({
+      uiToast({
         title: "Success",
         description: "Your symptoms have been analyzed",
       });
       onComplete(consultation);
     } catch (error) {
       console.error("Error during consultation:", error);
-      toast({
+      uiToast({
         title: "Error",
         description: "Failed to process your symptoms. Please try again.",
         variant: "destructive",
@@ -96,7 +104,7 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
             className="min-h-[150px]"
             value={symptoms}
             onChange={(e) => setSymptoms(e.target.value)}
-            disabled={loading}
+            disabled={loading || !isKeySet}
           />
         </div>
         
@@ -104,7 +112,7 @@ const AIDiagnosticForm = ({ patientId, onComplete }: AIDiagnosticFormProps) => {
           <Button 
             type="submit" 
             className="btn-primary" 
-            disabled={loading}
+            disabled={loading || !isKeySet}
           >
             {loading ? (
               <>
