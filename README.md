@@ -64,24 +64,7 @@ MY-Care is an innovative healthcare platform that leverages AI and LLM technolog
    # In another terminal, start frontend
    npm run dev
    ```
-
-## Project Structure
-MY-Care/
-├── backend/ # Flask backend
-│ ├── routes/ # API endpoints
-│ ├── services/ # Business logic
-│ ├── models/ # Data models
-│ └── app.py # Main Flask application
-├── public/ # Static files
-├── src/ # React frontend
-│ ├── components/ # UI components
-│ ├── lib/ # Utility functions
-│ ├── pages/ # Page components
-│ ├── services/ # API communication
-│ └── types/ # TypeScript interfaces
-├── server.js # Node.js server for OpenAI integration
-└── README.md # Project documentation
-
+   
 ## AI/LLM Integration
 
 DocCare leverages AI/LLM technologies in several key ways:
