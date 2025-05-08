@@ -1,47 +1,97 @@
-**Use your preferred IDE**
+# MY-Care - AI-Powered Healthcare Platform
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+MY-Care is an innovative healthcare platform that leverages AI and LLM technologies to provide multilingual symptom analysis, medical record management, and virtual health assistance.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Features
 
-Follow these steps:
+- **AI Symptom Analysis:** Submit symptoms via text or voice for AI-powered preliminary analysis
+- **Multilingual Support:** Operates in English, Malay, Chinese, and Tamil
+- **Voice Recognition:** Record symptoms verbally with automatic transcription and translation
+- **Virtual Health Assistant:** Chat-based assistant for health queries and medication reminders
+- **Medical Records:** Securely store and access patient medical history
+- **Hospital Recommendations:** Get hospital suggestions based on condition and location
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Technology Stack
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **Frontend:** React, TypeScript, Tailwind CSS, Shadcn UI
+- **Backend:** Node.js/Express and Flask (Python)
+- **AI Integration:** OpenAI GPT-3.5 Turbo for diagnosis, Whisper for voice transcription
+- **Real-time Communication:** Socket.IO
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Setup Instructions
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### Prerequisites
+- Node.js (v16+)
+- Python (3.8+)
+- OpenAI API key
 
-**Edit a file directly in GitHub**
+### Installation
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/doccare.git
+   cd doccare
+   ```
 
-**Use GitHub Codespaces**
+2. Install frontend dependencies:
+   ```
+   npm install
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. Install backend dependencies:
+   ```
+   cd backend
+   pip install -r requirements.txt
+   cd ..
+   ```
 
-## What technologies are used for this project?
+4. Create environment variables:
+   - Create a `.env` file in the root directory
+   - Add your OpenAI API key:
+     ```
+     VITE_OPENAI_API_KEY=your_openai_api_key
+     ```
 
-This project is built with:
+5. Start the development servers:
+   ```
+   # Start Node.js server
+   node server.js
+   
+   # In another terminal, start Flask backend
+   cd backend
+   flask run
+   
+   # In another terminal, start frontend
+   npm run dev
+   ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Project Structure
+MY-Care/
+├── backend/ # Flask backend
+│ ├── routes/ # API endpoints
+│ ├── services/ # Business logic
+│ ├── models/ # Data models
+│ └── app.py # Main Flask application
+├── public/ # Static files
+├── src/ # React frontend
+│ ├── components/ # UI components
+│ ├── lib/ # Utility functions
+│ ├── pages/ # Page components
+│ ├── services/ # API communication
+│ └── types/ # TypeScript interfaces
+├── server.js # Node.js server for OpenAI integration
+└── README.md # Project documentation
 
+## AI/LLM Integration
 
+DocCare leverages AI/LLM technologies in several key ways:
+
+1. **Symptom Analysis:** Uses GPT-3.5-TURBO to analyze patient-reported symptoms, providing preliminary condition assessments, urgency ratings, and recommended tests.
+
+2. **Voice Recognition:** Implements OpenAI's Whisper model to transcribe spoken symptoms and translate them if needed.
+
+3. **Medical Translation:** Provides accurate medical terminology translation across multiple languages.
+
+4. **Hospital Recommendations:** Suggests suitable hospitals based on the patient's condition, location, and special needs.
+
+5. **Virtual Health Assistant:** Powers the chat interface for answering medical questions and managing health information.
