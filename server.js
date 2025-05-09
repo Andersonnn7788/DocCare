@@ -3,12 +3,19 @@ import express from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import { OpenAI } from 'openai';
+import cors from 'cors';
 
 const app = express();
 const upload = multer({ dest: "uploads/" });
 
+// Enable CORS
+app.use(cors());
+app.use(express.json());
+
+// Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Existing audio upload endpoint
 app.post("/api/upload-audio", upload.single("audio"), async (req, res) => {
   try {
     const audioPath = req.file.path;

@@ -1,4 +1,3 @@
-
 export interface Patient {
   id: string;
   name: string;
@@ -96,4 +95,14 @@ export interface Hospital {
   facilities: string[];
   currentCapacity: number; // percentage
   waitTime: number; // minutes
+}
+
+export interface HospitalRecommendation {
+  hospitalName: string;
+  address: string;
+  specialistAvailability: boolean;
+  waitTime: string;
+  distance: string;
+  contactNumber: string;
+  suitabilityReason?: string;
 }

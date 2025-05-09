@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { franc } from 'franc-min';
 
 export function ChatWindow({ setUnread }: { setUnread: (v: boolean) => void }) {
   const [messages, setMessages] = useState([
@@ -14,7 +15,18 @@ export function ChatWindow({ setUnread }: { setUnread: (v: boolean) => void }) {
     setInput("");
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/chat", { message: input });
+      // Use franc-min to detect the language of the user's input
+      const francLang = franc(input);
+      let userLang = 'en';
+      if (francLang === 'cmn') userLang = 'zh';
+      else if (francLang === 'msa') userLang = 'ms';
+      else if (francLang === 'eng') userLang = 'en';
+      else if (francLang === 'tam') userLang = 'ta';
+      else if (francLang === 'spa') userLang = 'es';
+      else if (francLang === 'fra') userLang = 'fr';
+      else if (francLang === 'deu') userLang = 'de';
+      else if (navigator.language) userLang = navigator.language.split('-')[0];
+      const res = await axios.post("http://localhost:5000/api/virtual-assistant", { message: input, language: userLang });
       setMessages(msgs => [...msgs, { from: "assistant", text: res.data.answer }]);
       setUnread(true);
     } catch (err) {

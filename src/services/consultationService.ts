@@ -1,6 +1,4 @@
-
 import { toast } from "@/components/ui/sonner";
-import { DiagnosisResult, generateDiagnosis, recommendHospitals, translateText } from "@/lib/openai";
 import { Consultation, MedicalRecord, Patient } from "@/types/medical";
 
 // Mock database for demo purposes
@@ -33,37 +31,20 @@ export const initiateConsultation = async (
       patient = newPatient;
     }
 
-    // Translate symptoms if not in English
-    let translatedSymptoms = symptoms;
-    if (language !== "en") {
-      try {
-        translatedSymptoms = await translateText({
-          text: symptoms,
-          sourceLanguage: language,
-          targetLanguage: "en"
-        });
-      } catch (error) {
-        console.error("Translation error:", error);
-        // Continue with original symptoms if translation fails
-      }
-    }
-
-    // Get patient's past medical records
-    const patientRecords = mockMedicalRecords.filter(
-      record => record.patientId === patientId
-    );
-
-    // Generate preliminary AI diagnosis
-    const aiDiagnosis = await generateDiagnosis({
-      patientDescription: translatedSymptoms,
-      language: "en", // Already translated
-      medicalRecords: patientRecords.map(record => ({
-        date: record.date,
-        diagnosis: record.diagnosis,
-        treatment: record.treatment,
-        notes: record.notes
-      }))
+    // Call backend for AI diagnosis
+    const response = await fetch("http://localhost:5000/api/diagnosis", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        patientId,
+        symptoms,
+        language
+      })
     });
+    if (!response.ok) {
+      throw new Error("Failed to analyze symptoms");
+    }
+    const aiDiagnosis = await response.json();
 
     // Create new consultation
     const newConsultation: Consultation = {
@@ -76,17 +57,15 @@ export const initiateConsultation = async (
       symptoms,
       language,
       aiDiagnosis: {
-        translatedSymptoms: language !== "en" ? translatedSymptoms : undefined,
+        translatedSymptoms: aiDiagnosis.translatedSymptoms,
         possibleConditions: aiDiagnosis.possibleConditions,
         urgencyLevel: aiDiagnosis.urgencyLevel,
         notes: aiDiagnosis.notes
       }
     };
 
-    // Add to mock database
     mockConsultations.push(newConsultation);
 
-    // Alert if urgent case
     if (aiDiagnosis.urgencyLevel >= 8) {
       toast.warning("This case has been flagged as urgent. Prioritizing in the queue.");
     }
@@ -162,12 +141,116 @@ export const getHospitalRecommendations = async (
   urgencyLevel: number,
   specialNeeds: string[] = []
 ) => {
-  return recommendHospitals({
-    condition,
-    location: patientLocation,
-    urgencyLevel,
-    patientNeeds: specialNeeds
-  });
+  // Mock database of hospitals with their specialties
+  const hospitals = [
+    {
+      hospitalName: "Kuala Lumpur General Hospital",
+      address: "Jalan Pahang, 50586 Kuala Lumpur",
+      specialties: ["Cardiology", "Neurology", "Emergency", "Pediatrics", "General Surgery"],
+      specialistAvailability: true,
+      waitTime: urgencyLevel >= 8 ? "10-15 mins" : "30-45 mins",
+      distance: "2.3 km from " + patientLocation,
+      contactNumber: "+60326155555",
+      currentCapacity: 75
+    },
+    {
+      hospitalName: "Pantai Hospital Kuala Lumpur",
+      address: "8, Jalan Bukit Pantai, Bangsar, 59100 Kuala Lumpur",
+      specialties: ["Cardiology", "Orthopedics", "Oncology", "Gastroenterology"],
+      specialistAvailability: true,
+      waitTime: "15-20 mins",
+      distance: "4.8 km from " + patientLocation,
+      contactNumber: "+60322822333",
+      currentCapacity: 50
+    },
+    {
+      hospitalName: "Gleneagles Kuala Lumpur",
+      address: "286, Jalan Ampang, 50450 Kuala Lumpur",
+      specialties: ["Orthopedics", "Cardiology", "Neurology", "Pediatrics"],
+      specialistAvailability: true,
+      waitTime: "20-30 mins",
+      distance: "5.2 km from " + patientLocation,
+      contactNumber: "+60320501888",
+      currentCapacity: 40
+    },
+    {
+      hospitalName: "Prince Court Medical Centre",
+      address: "39, Jalan Kia Peng, 50450 Kuala Lumpur",
+      specialties: ["Gastroenterology", "Neurology", "Dermatology", "Pediatrics"],
+      specialistAvailability: urgencyLevel >= 7,
+      waitTime: "25-35 mins",
+      distance: "3.7 km from " + patientLocation,
+      contactNumber: "+60321600000",
+      currentCapacity: 60
+    },
+    {
+      hospitalName: "Tung Shin Hospital",
+      address: "102, Jalan Pudu, 55100 Kuala Lumpur",
+      specialties: ["Traditional Chinese Medicine", "General Medicine", "Pediatrics"],
+      specialistAvailability: false,
+      waitTime: "40-60 mins",
+      distance: "1.5 km from " + patientLocation,
+      contactNumber: "+60321424822",
+      currentCapacity: 85
+    }
+  ];
+
+  // Determine relevant specialties based on condition
+  let relevantSpecialties: string[] = ["General Medicine"]; // Default
+  
+  // Simple specialty mapping based on keywords in the condition
+  const conditionLower = condition.toLowerCase();
+  if (conditionLower.includes("heart") || conditionLower.includes("chest pain") || conditionLower.includes("cardiac")) {
+    relevantSpecialties = ["Cardiology", "Emergency"];
+  } else if (conditionLower.includes("gastritis") || conditionLower.includes("stomach") || conditionLower.includes("digest")) {
+    relevantSpecialties = ["Gastroenterology", "General Medicine"];
+  } else if (conditionLower.includes("bone") || conditionLower.includes("joint") || conditionLower.includes("fracture")) {
+    relevantSpecialties = ["Orthopedics", "Emergency"];
+  } else if (conditionLower.includes("skin") || conditionLower.includes("rash") || conditionLower.includes("allerg")) {
+    relevantSpecialties = ["Dermatology", "General Medicine"];
+  } else if (conditionLower.includes("brain") || conditionLower.includes("nerve") || conditionLower.includes("head")) {
+    relevantSpecialties = ["Neurology", "Emergency"];
+  }
+
+  // Filter and rank hospitals by relevance, capacity, and urgency
+  const rankedHospitals = hospitals
+    .map(hospital => {
+      // Calculate relevance score based on matching specialties
+      const specialtyMatch = hospital.specialties.some(specialty => 
+        relevantSpecialties.includes(specialty));
+      
+      // Calculate score based on urgency, capacity, and specialty match
+      let score = 0;
+      if (specialtyMatch) score += 5;
+      if (hospital.specialistAvailability) score += 3;
+      if (hospital.currentCapacity < 70) score += 2;
+      if (urgencyLevel >= 7 && hospital.waitTime.includes("10-15")) score += 3;
+      
+      return { ...hospital, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map(({ score, specialties, currentCapacity, ...rest }) => {
+      // Generate a suitability reason based on the hospital's attributes
+      let suitabilityReason = "";
+      
+      if (urgencyLevel >= 8 && rest.waitTime.includes("10-15")) {
+        suitabilityReason = "Low wait time for urgent cases";
+      } else if (relevantSpecialties.some(s => specialties.includes(s))) {
+        suitabilityReason = `Specialist available for ${condition}`;
+      } else if (currentCapacity < 60) {
+        suitabilityReason = "Low current capacity, shorter wait times likely";
+      } else {
+        suitabilityReason = "General care facility";
+      }
+      
+      return { ...rest, suitabilityReason };
+    });
+
+  // Wait a bit to simulate an API call
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Return top 3 hospitals
+  return rankedHospitals.slice(0, 3);
 };
 
 // Mock data initialization for demo

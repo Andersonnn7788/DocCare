@@ -1,11 +1,9 @@
-
 import React from 'react';
-import { Consultation, Hospital } from "@/types/medical";
+import { Consultation, Hospital, HospitalRecommendation } from "@/types/medical";
 import { Button } from "./ui/button";
-import { AlertTriangle, Check, Clock, X } from "lucide-react";
+import { AlertTriangle, Check, Clock, X, MapPin } from "lucide-react";
 import { getHospitalRecommendations } from "@/services/consultationService";
 import { useState } from "react";
-import { HospitalRecommendation } from "@/lib/openai";
 
 interface AIDiagnosisResultProps {
   consultation: Consultation;
@@ -21,6 +19,8 @@ const AIDiagnosisResult: React.FC<AIDiagnosisResultProps> = ({
   const [hospitals, setHospitals] = useState<HospitalRecommendation[]>([]);
   const [loadingHospitals, setLoadingHospitals] = useState(false);
   const [showHospitals, setShowHospitals] = useState(false);
+  const [locationInput, setLocationInput] = useState(patientLocation);
+  const [showLocationInput, setShowLocationInput] = useState(false);
 
   const { aiDiagnosis } = consultation;
   if (!aiDiagnosis) {
@@ -53,12 +53,18 @@ const AIDiagnosisResult: React.FC<AIDiagnosisResultProps> = ({
   const handleFindHospitals = async () => {
     if (possibleConditions.length === 0) return;
     
+    // If location input is not shown yet, show it first
+    if (!showLocationInput) {
+      setShowLocationInput(true);
+      return;
+    }
+    
     setLoadingHospitals(true);
     try {
       const condition = possibleConditions[0].condition;
       const recommendations = await getHospitalRecommendations(
         condition,
-        patientLocation,
+        locationInput || "Kuala Lumpur",
         urgencyLevel,
         []
       );
@@ -102,14 +108,18 @@ const AIDiagnosisResult: React.FC<AIDiagnosisResultProps> = ({
                     </span>
                   )}
                 </div>
-                <span className="text-sm">
-                  {Math.round(condition.confidence * 100)}% match
-                </span>
               </li>
             ))}
           </ul>
         </div>
       )}
+
+      <div className="mb-6">
+        <h3 className="font-medium text-gray-700 mb-2">AI Triage & Recommendation</h3>
+        <div className="p-3 bg-slate-50 rounded-md text-sm">
+          This is a preliminary analysis based on your symptoms. It is important to consult a qualified doctor for a thorough evaluation and appropriate medical care. Please seek professional medical attention promptly.
+        </div>
+      </div>
 
       {notes && (
         <div className="mb-6">
@@ -120,20 +130,45 @@ const AIDiagnosisResult: React.FC<AIDiagnosisResultProps> = ({
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-3 mt-6">
-        <Button 
-          onClick={onRequestDoctor} 
-          className="btn-primary flex-1"
-        >
-          Request Doctor Consultation
-        </Button>
-        <Button 
-          onClick={handleFindHospitals}
-          className="btn-outline flex-1"
-          disabled={loadingHospitals}
-        >
-          {loadingHospitals ? "Finding Hospitals..." : "Find Nearby Hospitals"}
-        </Button>
+      <div className="flex flex-col gap-3 mt-6">
+        <div className="flex flex-col md:flex-row gap-3">
+          <Button 
+            onClick={onRequestDoctor} 
+            className="btn-primary flex-1"
+          >
+            Request Doctor Consultation
+          </Button>
+          
+          <Button 
+            onClick={handleFindHospitals}
+            className="btn-outline flex-1"
+            disabled={loadingHospitals}
+          >
+            {loadingHospitals ? "Finding Hospitals..." : "Find Nearby Hospitals"}
+          </Button>
+        </div>
+        
+        {showLocationInput && (
+          <div className="flex items-center gap-2 border rounded-md p-2 mt-2">
+            <MapPin className="h-5 w-5 text-gray-500" />
+            <input
+              type="text"
+              className="flex-1 border-none outline-none"
+              placeholder="Enter your location (e.g., Petaling Jaya, Penang, Johor Bahru)"
+              value={locationInput}
+              onChange={(e) => setLocationInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleFindHospitals()}
+              autoFocus
+            />
+            <Button 
+              size="sm"
+              onClick={handleFindHospitals}
+              disabled={loadingHospitals}
+            >
+              {loadingHospitals ? "Searching..." : "Search"}
+            </Button>
+          </div>
+        )}
       </div>
 
       {showHospitals && hospitals.length > 0 && (
