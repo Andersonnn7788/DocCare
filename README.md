@@ -15,7 +15,7 @@ MY-Care is an innovative healthcare platform that leverages AI and LLM technolog
 
 - **Frontend:** React, TypeScript, Tailwind CSS, Shadcn UI
 - **Backend:** Node.js/Express and Flask (Python)
-- **AI Integration:** OpenAI GPT-3.5 Turbo for diagnosis, Whisper for voice transcription
+- **AI Integration:** OpenAI GPT-4o-mini for diagnosis, Whisper for voice transcription
 - **Real-time Communication:** Socket.IO
 
 ## Setup Instructions
@@ -69,7 +69,7 @@ MY-Care is an innovative healthcare platform that leverages AI and LLM technolog
 
 DocCare leverages AI/LLM technologies in several key ways:
 
-1. **Symptom Analysis:** Uses GPT-3.5-TURBO to analyze patient-reported symptoms, providing preliminary condition assessments, urgency ratings, and recommended tests.
+1. **Symptom Analysis:** Uses GPT-4o-mini to analyze patient-reported symptoms, providing preliminary condition assessments, urgency ratings, and recommended tests.
 
 2. **Voice Recognition:** Implements OpenAI's Whisper model to transcribe spoken symptoms and translate them if needed.
 
